@@ -1,2 +1,11 @@
 # secure-fingerprint
-Repository for the final project of EE565 - Advanced Image Processing at West Virginia University 
+
+# Project Members
+
+1. Chowdhury Md Abid Rahman
+2. FNU Shivam
+3. Jacob Thrasher
+
+# Dataset
+
+Sokoto Coventry Fingerprint Dataset (SOCOFing): https://www.kaggle.com/datasets/ruizgara/socofing/
