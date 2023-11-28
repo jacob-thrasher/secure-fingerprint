@@ -33,7 +33,7 @@ def get_train_test_split_socofing(root, test_size=0.2, valid_size=0.2):
     return train_subjects, test_subjects
 
 class SOCOFing(Dataset):
-    def __init__(self, root, subjects):
+    def __init__(self, root, subjects, resize=(100, 100)):
         '''
 
         Load SOCOFing dataset and labels based on the following naming convention
@@ -54,6 +54,7 @@ class SOCOFing(Dataset):
 
         transform = transforms.Compose([
             transforms.ToTensor(),
+            transforms.Resize(resize),
             transforms.Normalize((0.5), (1.0))
         ])
 
@@ -85,5 +86,5 @@ class SOCOFing(Dataset):
         return len(self.data)
     
     def __getitem__(self, idx):
-        return self.data[idx]
+        return self.data[idx]['img'].unsqueeze(0)
     
