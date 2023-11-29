@@ -19,7 +19,7 @@ class CNNClassifier(nn.Module):
         for i in range(1, n_conv_layers):
             this_layer = nn.ModuleDict({
                             'conv': nn.Conv2d(init_channels*i, init_channels*(i+1), kernel_size=3),
-                            'norm': nn.BatchNorm2d(num_features=init_channels*(i+1)),
+                            'batch_norm': nn.BatchNorm2d(num_features=init_channels*(i+1)),
                             'instance_norm': nn.InstanceNorm2d(num_features=init_channels)
                             })
             layers.append(this_layer)
