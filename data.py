@@ -32,7 +32,7 @@ def get_train_test_split_socofing(root, test_size=0.2, valid_size=0.2):
         
     return train_subjects, test_subjects
 
-class SOCOFing(Dataset):
+class SOCOFing_Class(Dataset):
     def __init__(self, root, subjects, resize=(100, 100)):
         '''
 
@@ -87,4 +87,39 @@ class SOCOFing(Dataset):
     
     def __getitem__(self, idx):
         return self.data[idx]['img'].unsqueeze(0)
+    
+class SOCOFing_Gen(Dataset):
+    '''
+        Load SOCOFing images and ground truth data
+
+        Args:
+            dataroot: (pathLike) path to training images
+            gtroot: (pathLike) path to ground truth
+        '''
+    def __init__(self, data_root, gt_root, resize=(100, 100)):
+        self.data_root = data_root
+        self.data = os.listdir(data_root)
+        self.gt_root = gt_root
+        self.gt = os.listdir(gt_root)
+
+        self.transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Resize(resize),
+            transforms.Normalize((0.5), (1.0))
+        ])
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        train_name = self.data[idx]
+        attr = train_name.split('_')
+        gt_name = attr[0] + '__' + attr[2] + '_' + attr[3] + '_' + attr[4] + '_finger.BMP'
+
+        train_img_path = os.path.join(self.data_root, train_name)
+        gt_path = os.path.join(self.gt_root, gt_name)
+        train_img = self.transform(Image.open(train_img_path).convert('L')).squeeze()
+        gt_img = self.transform(Image.open(gt_path).convert('L')).squeeze()
+
+        return train_img, gt_img
     
