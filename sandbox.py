@@ -4,16 +4,20 @@ from torch.utils.data import DataLoader
 from network import CNNClassifier, VAE
 import matplotlib.pyplot as plt
 
-train_root = 'D:\\Big_Data\\SOCOFing\\SOCOFing\\Altered\\Altered-Hard'
-gt_root = 'D:\\Big_Data\\SOCOFing\\SOCOFing\\Real'
-# train, test = get_train_test_split_socofing(root)
-dataset = SOCOFing_Gen(train_root, gt_root)
+print(os.getcwd())
+train_root = '/home/jacob/Documents/data/archive/SOCOFing/Altered/Altered-Hard'
+gt_root = '/home/jacob/Documents/data/archive/SOCOFing/Real'
+train_samples, test_samples = socofing_train_test_split_gen(train_root, test_size=32)
 
-train, gt = dataset[0]
+print(len(train_samples), len(test_samples))
+
+train_dataset = SOCOFing_Gen(train_root, gt_root, train_samples, test_samples)
+
+train, gt = train_dataset[0]
 fig, (ax1, ax2) = plt.subplots(1, 2)
 ax1.imshow(train, cmap='gray')
 ax2.imshow(gt, cmap='gray')
-plt.show()
+fig.savefig('test.png')
 
 # dataloader = DataLoader(dataset, batch_size=32)
 # batch = next(iter(dataloader))

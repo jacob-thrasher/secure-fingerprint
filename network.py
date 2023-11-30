@@ -186,4 +186,4 @@ class VAE(nn.Module):
         z = self.reparameterize(mu, logvar)
         x_recon = self._decoder(z)
 
-        return x_recon
+        return x_recon, mu, logvar

@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 # TODO: Add support for altered fingerprints
 # TODO: Add validation support
-def get_train_test_split_socofing(root, test_size=0.2, valid_size=0.2):
+def get_train_test_split_socofing(root, test_size=0.2, valid_size=0.2, split_method='standard'):
     '''
     Divides dataset into train, test, and validation splits
 
@@ -22,15 +22,30 @@ def get_train_test_split_socofing(root, test_size=0.2, valid_size=0.2):
         Tuple: (train_dataset, test_dataset, valid_dataset)
     '''
 
+    assert split_method in ['standard', 'subject'], f'parameter split_method should be in [standard, subject], got {split_method}'
+
     files = os.listdir(root)
     subject_ids = list(range(1, 601))
+    if split_method == 'subject':
+        # Divide train/test by subject ID to avoid data leakage
+        num_test_samples = int(len(subject_ids) * test_size)
+        test_subjects = random.sample(subject_ids, num_test_samples)
+        train_subjects = [x for x in subject_ids if x not in test_subjects]
+            
+        return train_subjects, test_subjects
+    elif split_method == 'standard':
+        num_test_samples = int(len(files) * test_size)
 
-    # Divide train/test by subject ID to avoid data leakage
-    num_test_samples = int(len(subject_ids) * test_size)
-    test_subjects = random.sample(subject_ids, num_test_samples)
-    train_subjects = [x for x in subject_ids if x not in test_subjects]
-        
-    return train_subjects, test_subjects
+def socofing_train_test_split_gen(root, test_size):
+    files = os.listdir(root)
+
+    n_test_samples = test_size
+    if test_size < 1:
+        n_test_samples = int(len(files) * test_size)
+
+    test_samples = random.sample(files, n_test_samples)
+    train_samples = [x for x in files if x not in test_samples]
+    return train_samples, test_samples
 
 class SOCOFing_Class(Dataset):
     def __init__(self, root, subjects, resize=(100, 100)):
@@ -96,11 +111,10 @@ class SOCOFing_Gen(Dataset):
             dataroot: (pathLike) path to training images
             gtroot: (pathLike) path to ground truth
         '''
-    def __init__(self, data_root, gt_root, resize=(100, 100)):
+    def __init__(self, data_root, gt_root, data_samples, resize=(100, 100)):
         self.data_root = data_root
-        self.data = os.listdir(data_root)
-        self.gt_root = gt_root
-        self.gt = os.listdir(gt_root)
+        self.data = data_samples
+        self.gt_root = gt_root        
 
         self.transform = transforms.Compose([
             transforms.ToTensor(),
@@ -121,5 +135,5 @@ class SOCOFing_Gen(Dataset):
         train_img = self.transform(Image.open(train_img_path).convert('L')).squeeze()
         gt_img = self.transform(Image.open(gt_path).convert('L')).squeeze()
 
-        return train_img, gt_img
+        return train_img.unsqueeze(0), gt_img.unsqueeze(0)
     
