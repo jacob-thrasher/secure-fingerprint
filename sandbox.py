@@ -4,6 +4,8 @@ from torch.utils.data import DataLoader
 from network import CNNClassifier, VAE
 import matplotlib.pyplot as plt
 
+# This is a change
+
 print(os.getcwd())
 train_root = '/home/jacob/Documents/data/archive/SOCOFing/Altered/Altered-Hard'
 gt_root = '/home/jacob/Documents/data/archive/SOCOFing/Real'
