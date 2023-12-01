@@ -5,8 +5,10 @@ from network import VAE
 from data import socofing_train_test_split_gen, SOCOFing_Gen
 from train_test import train_vae
 
-data_root = '/home/jacob/Documents/data/archive/SOCOFing/Altered/Altered-Easy'
-gt_root = '/home/jacob/Documents/data/archive/SOCOFing/Real'
+torch.manual_seed(0)
+
+data_root = 'D:\\Big_Data\\SOCOFing\\SOCOFing\\Altered\\Altered-Easy'
+gt_root = 'D:\\Big_Data\\SOCOFing\\SOCOFing\\Real'
 train_samples, test_samples = socofing_train_test_split_gen(data_root, test_size=.1)
 
 print(f'Loading data with:\n--> Train: {len(train_samples)} samples\n--> Test : {len(test_samples)} samples')

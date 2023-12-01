@@ -13,20 +13,22 @@ def create_img_grid(model, dataloader, filename, device):
     model.eval()
     X, Y = next(iter(dataloader))
     X = X.to(device)
+    Y = Y.to(device)
     X_recon, _, _ = model(X)
 
     n = min(X.size(0), 8)
-    comparison = torch.cat([Y[:n], X_recon[:n]])
+    comparison = torch.cat([Y[:n]*255, X[:n]*255, X_recon[:n]*255])
 
     grid = make_grid(comparison)
     ndarr = grid.mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to("cpu", torch.uint8).numpy()
     
     plt.figure()
     plt.imshow(ndarr)
+    plt.axis('off')
     plt.savefig(filename)
 
-def vae_loss(recon_x, x, mu, logvar, beta=1):   
-    # recon_loss = F.binary_cross_entropy(recon_x, x.view(-1, 320000), reduction='sum')
+def vae_loss(recon_x, x, mu, logvar, beta=0):   
+    # recon_loss = F.binary_cross_entropy(recon_x.view(-1, 10000), x.view(-1, 10000), reduction='sum')
     recon_loss = F.mse_loss(recon_x, x)
     KLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
@@ -47,7 +49,7 @@ def train_step_vae(model, dataloader, optim, device):
         loss.backward()
         optim.step()
 
-    return tot_loss / len(dataloader.dataset)
+    return tot_loss / len(dataloader)
 
 def test_step_vae(model, dataloader, device):
     model.eval()
@@ -60,7 +62,7 @@ def test_step_vae(model, dataloader, device):
         loss = vae_loss(X_recon, Y, mu, logvar)
         tot_loss += loss.item()
 
-    return tot_loss / len(dataloader.dataset)
+    return tot_loss / len(dataloader)
 
 def train_vae(model, train_dataloader, test_dataloader, optim, device='cuda', epochs=100):
     all_train_loss = []
@@ -85,4 +87,5 @@ def train_vae(model, train_dataloader, test_dataloader, optim, device='cuda', ep
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
         plt.title('VAE loss')
+        plt.legend()
         plt.savefig('figures/loss.png')
