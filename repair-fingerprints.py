@@ -8,8 +8,8 @@ from network import VAE
 from tqdm import tqdm
 
 
-data_root = 'D:\\Big_Data\\SOCOFing\\SOCOFing\\Altered\\Altered-Hard'
-dst = 'D:\\Big_Data\\SOCOFing\\Repaired\\Hard'
+data_root = '/home/jacob/Documents/data/archive/SOCOFing/Altered/Altered-Hard'
+dst = '/home/jacob/Documents/data/archive/SOCOFing/Repaired/Hard'
 
 df = pd.read_csv('data/vae_test.csv')
 df = df[df['Difficulty'] == 'Hard']
