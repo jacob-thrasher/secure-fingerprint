@@ -1,6 +1,7 @@
 import os
 import random
 import torchvision.transforms.functional as F
+import pandas as pd
 
 from PIL import Image
 from torch.utils.data import Dataset
@@ -104,6 +105,51 @@ class SOCOFing_Class(Dataset):
         return self.data[idx]['img'].unsqueeze(0)
     
 class SOCOFing_Gen(Dataset):
+    '''
+        Load SOCOFing images and ground truth data
+
+        Args:
+            dataroot: (pathLike) path to training images
+            gtroot: (pathLike) path to ground truth
+        '''
+    def __init__(self, data_root, gt_root, data_csv, drop_difficulty=[], resize=(100, 100), sample=1):
+        self.df = pd.read_csv(data_csv)
+
+        for d in drop_difficulty:
+            assert d in ['Easy', 'Medium', 'Hard'], f'drop_difficulty expects inputs to be in [Easy, Medium, Hard], got {d}'
+            self.df = self.df[self.df['Difficulty'] != d]
+
+        self.df = self.df.sample(frac=sample, random_state=1)
+
+        self.data_root = data_root
+        self.gt_root = gt_root        
+
+        self.transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Resize(resize),
+            transforms.Normalize((0.5), (1.0))
+        ])
+    
+    def __len__(self):
+        return len(self.df)
+    
+    def __getitem__(self, idx):
+        row = self.df.iloc[idx]
+        train_name = row.Image_Name
+        difficulty = row.Difficulty
+
+        attr = train_name.split('_')
+        gt_name = attr[0] + '__' + attr[2] + '_' + attr[3] + '_' + attr[4] + '_finger.BMP'
+
+        train_img_path = os.path.join(self.data_root, f'Altered-{difficulty}', train_name)
+        gt_path = os.path.join(self.gt_root, gt_name)
+        train_img = self.transform(Image.open(train_img_path).convert('L')).squeeze()
+        gt_img = self.transform(Image.open(gt_path).convert('L')).squeeze()
+
+        return train_img.unsqueeze(0), gt_img.unsqueeze(0)
+    
+
+class SOCOFing_Gen_Old(Dataset):
     '''
         Load SOCOFing images and ground truth data
 

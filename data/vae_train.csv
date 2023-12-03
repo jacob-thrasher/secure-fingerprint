@@ -1,4 +1,4 @@
-Image Name,Number,Gender,Hand,Finger,Alteration,Difficulty
+Image_Name,Number,Gender,Hand,Finger,Alteration,Difficulty
 100__M_Left_index_finger_CR.BMP,100,M,Left,index,CR,Easy
 100__M_Left_index_finger_Obl.BMP,100,M,Left,index,Obl,Easy
 100__M_Left_index_finger_Zcut.BMP,100,M,Left,index,Zcut,Easy
