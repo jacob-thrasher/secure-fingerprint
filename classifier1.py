@@ -64,7 +64,7 @@ transform = transforms.Compose([
 
 # Create instances of the custom dataset
 train_dataset = CustomDataset(csv_file='train_data.csv', root_dir='/home/shivam/Downloads/SOCOFing/Real', transform=transform)
-test_dataset = CustomDataset(csv_file='test_data.csv', root_dir='/home/shivam/Downloads/SOCOFing/Real', transform=transform)
+test_dataset = CustomDataset(csv_file='test_data.csv', root_dir='/home/shivam/Pictures/Repaired-Easy', transform=transform)
 
 # Create data loaders
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
