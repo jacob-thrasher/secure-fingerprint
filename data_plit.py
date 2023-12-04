@@ -3,7 +3,7 @@ import os
 import csv
 from tqdm import tqdm
  
-root = '/home/shivam/Pictures/Repaired-Easy'
+root = '/home/shivam/Repaired-Easy'
 
 f = open('data/class_test_from_vae_easy.csv', 'w', newline='')
 writer = csv.writer(f)
@@ -15,3 +15,4 @@ for filename in tqdm(os.listdir(root)):
     writer.writerow([filename, attr[0], attr[2], attr[3], attr[4], attr[6].split('.')[0]])
 
 f.close()
+
