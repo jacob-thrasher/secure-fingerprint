@@ -3,9 +3,9 @@ import os
 import csv
 from tqdm import tqdm
  
-root = '/home/shivam/Pictures/Repaired-Easy'
+root = '/home/jacob/Documents/data/archive/SOCOFing/Repaired/Hard'
 
-f = open('data/class_test_from_vae_easy.csv', 'w', newline='')
+f = open('data/class_test_from_vae_hard.csv', 'w', newline='')
 writer = csv.writer(f)
 writer.writerow(["Image Name", "Number", "Gender", "Hand", "Finger", "Alteration"])
 
