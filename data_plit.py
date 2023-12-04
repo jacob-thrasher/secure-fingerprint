@@ -15,3 +15,4 @@ for filename in tqdm(os.listdir(root)):
     writer.writerow([filename, attr[0], attr[2], attr[3], attr[4], attr[6].split('.')[0]])
 
 f.close()
+

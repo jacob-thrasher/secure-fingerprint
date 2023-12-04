@@ -9,11 +9,13 @@ from PIL import Image
 
 
 # Load the CSV file
-file_path = '/home/shivam/Downloads/columnwise_images.csv'  # Replace with your file path
-data = pd.read_csv(file_path)
+train_file_path = '/home/shivam/Downloads/columnwise_images.csv'  # Replace with your file path
+test_file_path = '/home/shivam/Downloads/class_test_from_vae_easy.csv'
+train_data = pd.read_csv(train_file_path)
+test_data = pd.read_csv(test_file_path)
 
 # Splitting the dataset into training and testing sets (80% - 20%)
-train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
+train_data, val_data = train_test_split(train_data, test_size=0.2, random_state=42)
 
 # Display the sizes of the training and testing sets
 print(f"Training set size: {len(train_data)}")
@@ -21,7 +23,7 @@ print(f"Testing set size: {len(test_data)}")
 
 # Save the split datasets to new CSV files if needed
 train_data.to_csv('train_data.csv', index=False)
-test_data.to_csv('test_data.csv', index=False)
+val_data.to_csv('val_data.csv', index=False)
 
 
 # Define a custom dataset class
@@ -64,12 +66,12 @@ transform = transforms.Compose([
 
 # Create instances of the custom dataset
 train_dataset = CustomDataset(csv_file='train_data.csv', root_dir='/home/shivam/Downloads/SOCOFing/Real', transform=transform)
-test_dataset = CustomDataset(csv_file='test_data.csv', root_dir='/home/shivam/Pictures/Repaired-Easy', transform=transform)
-
+val_dataset = CustomDataset(csv_file='val_data.csv', root_dir= '/home/shivam/Downloads/SOCOFing/Real', transform=transform)
+test_dataset = CustomDataset(csv_file= 'class_test_from_vae_easy.csv', root_dir= '/home/shivam/Repaired-Easy', transform=transform)
 # Create data loaders
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-
 # Define a simple CNN model
 class SimpleCNN(torch.nn.Module):
 
@@ -111,7 +113,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=3, verbose=True)
 # Training the model
 train_losses = []
-num_epochs = 10
+num_epochs = 5
 for epoch in range(num_epochs):
     model.train()
     running_loss = 0.0
@@ -135,6 +137,18 @@ model.eval()
 correct = 0
 total = 0
 with torch.no_grad():
+    for inputs, labels in val_loader:
+        outputs = model(inputs)
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
+
+print(f"Accuracy on validation set: {(correct/total)*100:.2f}%")
+
+model.eval()
+correct = 0
+total = 0
+with torch.no_grad():
     for inputs, labels in test_loader:
         outputs = model(inputs)
         _, predicted = torch.max(outputs.data, 1)
@@ -142,3 +156,4 @@ with torch.no_grad():
         correct += (predicted == labels).sum().item()
 
 print(f"Accuracy on test set: {(correct/total)*100:.2f}%")
+
