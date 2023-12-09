@@ -1,0 +1,19 @@
+Classification results
+
+Training data: Real
+Testing data:
+--> Real: 76.33%
+
+Training data: Real
+Testing data:
+--> Real      : 75.08%
+--> VAE (Easy): 74.78%
+--> VAE (Hard): 76.66%
+
+Training data: VAE (Easy)
+Testing data:
+--> Real: 78.00%
+
+Training data: VAE (Hard)
+Testing data:
+--> Real: 78.00%

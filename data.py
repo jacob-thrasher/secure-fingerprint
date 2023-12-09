@@ -48,61 +48,47 @@ def socofing_train_test_split_gen(root, test_size):
     train_samples = [x for x in files if x not in test_samples]
     return train_samples, test_samples
 
-class SOCOFing_Class(Dataset):
-    def __init__(self, root, subjects, resize=(100, 100)):
-        '''
 
-        Load SOCOFing dataset and labels based on the following naming convention
+######################
+# CLASSIFIER CLASSES #
+######################
 
-        Example: 1__M_Left_index_finger_Obl.BMP
-            "1"     --> Subject ID
-            "M"     --> Sex (Male/Female)
-            "Left"  --> Hand (Left/Right)
-            "index" --> Finger (little, ring, middle, index, thumb)
-            "Obl"   --> Alteration type - Note: not present in "real" data
-                            (Obl - obliteration, CR - central rotation, Zcut)
-            From: https://arxiv.org/ftp/arxiv/papers/1807/1807.10609.pdf
+class ToRGBTensor(object):
+    def __call__(self, img):
+        if img.mode == 'RGBA':
+            r, g, b, a = img.split()
+            img = Image.merge("RGB", (r, g, b))
+        return transforms.ToTensor()(img)
 
-        Args:
-            root: (pathLike) path to dataset
-            subjects: (list[str]) list of subject IDs
-        '''
-
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Resize(resize),
-            transforms.Normalize((0.5), (1.0))
+class SOCOFing_class(Dataset):
+    def __init__(self, csv_file, root_dir, transform=None):
+        self.data = pd.read_csv(csv_file)
+        self.root_dir = root_dir
+        self.transform = transforms.Compose([
+            transforms.Resize((128, 128)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(10),
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+            ToRGBTensor(),
         ])
 
-        files = os.listdir(root)
-        samples = [f for f in files if int(f.split('_')[0]) in subjects]
-        self.data = []
-
-        for s in tqdm(samples, 'Loading data'):
-            img_path = os.path.join(root, s)
-            # Load image
-            img = transform(Image.open(img_path).convert('L')).squeeze()
-
-            # Get attributes
-            filename = s.split('.')[0]
-            attributes = filename.split('_')
-            subject_labels = {
-                "id": attributes[0],
-                "sex": attributes[2],
-                "hand": attributes[3],
-                "finger": attributes[4],
-                "alteration": attributes[6] if len(attributes) == 7 else None,
-                "path": img_path,
-                "img": img
-            }
-            self.data.append(subject_labels)
-
-    
     def __len__(self):
         return len(self.data)
-    
+
     def __getitem__(self, idx):
-        return self.data[idx]['img'].unsqueeze(0)
+        img_name = os.path.join(self.root_dir, self.data.iloc[idx, 0])
+        image = Image.open(img_name)
+        label = 0 if self.data.iloc[idx, 2] == 'M' else 1  # Assuming 'M' represents male and 'F' represents female
+        # Convert label to a tensor
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image, label
+
+###############
+# VAE CLASSES #
+###############
     
 class SOCOFing_Gen(Dataset):
     '''

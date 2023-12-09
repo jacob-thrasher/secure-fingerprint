@@ -3,9 +3,11 @@ import os
 import csv
 from tqdm import tqdm
  
-root = '/home/jacob/Documents/data/archive/SOCOFing/Repaired/Hard'
+root = 'D:\\Big_Data\\SOCOFing\\Repaired\\Repaired-Hard_20'
+dst = 'data/class_from_vae'
+filename = 'Hard_20.csv'
 
-f = open('data/class_test_from_vae_hard.csv', 'w', newline='')
+f = open(os.path.join(dst, filename), 'w', newline='')
 writer = csv.writer(f)
 writer.writerow(["Image Name", "Number", "Gender", "Hand", "Finger", "Alteration"])
 

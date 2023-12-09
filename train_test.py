@@ -135,3 +135,5 @@ def train_vae(model,
         plt.title('Structural Similarity Index Measure')
         plt.savefig(os.path.join(figpath, 'ssim.png'))
         plt.close()
+
+    return all_psnr, all_ssim

@@ -8,10 +8,10 @@ from network import VAE
 from tqdm import tqdm
 
 
-data_root = '/home/jacob/Documents/data/archive/SOCOFing/Altered/Altered-Hard'
-dst = '/home/jacob/Documents/data/archive/SOCOFing/Repaired/Hard'
+data_root = 'D:\\Big_Data\\SOCOFing\\Altered\\Altered-Hard'
+dst = 'D:\\Big_Data\\SOCOFing\\Repaired\\Repaired-Hard_20'
 
-df = pd.read_csv('data/vae_test.csv')
+df = pd.read_csv('data/vae_test_20.csv')
 df = df[df['Difficulty'] == 'Hard']
 
 subjects = list(df.Image_Name)
@@ -26,7 +26,7 @@ model = VAE(num_hiddens=128,
             num_residual_hiddens=32,
             num_residual_layers=2,
             z_dim=64)
-model.load_state_dict(torch.load('models/csv_hard/VAE_e100.pt'))
+model.load_state_dict(torch.load('models/80-20/Hard/VAE_e100.pt'))
 model.to('cuda')
 model.eval()
 

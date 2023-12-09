@@ -7,17 +7,17 @@ import pandas as pd
 import csv
 from tqdm import tqdm
 
-data_root = 'D:\\Big_Data\\SOCOFing\\SOCOFing\\Altered'
-gt_root = 'D:\\Big_Data\\SOCOFing\\SOCOFing\\Real'
+# data_root = 'D:\\Big_Data\\SOCOFing\\SOCOFing\\Altered'
+# gt_root = 'D:\\Big_Data\\SOCOFing\\SOCOFing\\Real'
 
-dataset = SOCOFing_Gen(data_root, gt_root, 'data/vae_train.csv', drop_difficulty=['Medium', 'Hard'])
+# dataset = SOCOFing_Gen(data_root, gt_root, 'data/vae_train.csv', drop_difficulty=['Medium', 'Hard'])
 
-df = dataset.df
-df.to_csv('test.csv')
+# df = dataset.df
+# df.to_csv('test.csv')
 
-train, test = dataset[0]
+# train, test = dataset[0]
 
-print(train.size(), test.size())
+# print(train.size(), test.size())
 
 
 # print(os.getcwd())
@@ -61,23 +61,23 @@ print(train.size(), test.size())
 
 # VAE train/test split code
 
-# df = pd.read_csv('data\\test_data.csv')  
-# train_subjects = list(df['Image Name'])
+df = pd.read_csv('data\\test_set_2.csv')  
+train_subjects = list(df['Image Name'])
 
-# diff = ['Easy', 'Medium', 'Hard']
-# root = 'D:\\Big_Data\\SOCOFing\\SOCOFing\\Altered'
+diff = ['Easy', 'Medium', 'Hard']
+root = 'D:\\Big_Data\\SOCOFing\\Altered'
 
-# f = open('data\\vae_test.csv', 'w', newline='')
-# writer = csv.writer(f)
-# writer.writerow(["Image Name", "Number", "Gender", "Hand", "Finger", "Alteration", "Difficulty"])
+f = open('data\\vae_test_50.csv', 'w', newline='')
+writer = csv.writer(f)
+writer.writerow(["Image_Name", "Number", "Gender", "Hand", "Finger", "Alteration", "Difficulty"])
 
-# for d in diff:
-#     data_path = os.path.join(root, f'Altered-{d}')
-#     for filename in tqdm(os.listdir(data_path)):
-#         attr = filename.split('_')
-#         gt_filename = attr[0] + '__' + attr[2] + '_' + attr[3] + '_' + attr[4] + '_finger.BMP'
+for d in diff:
+    data_path = os.path.join(root, f'Altered-{d}')
+    for filename in tqdm(os.listdir(data_path)):
+        attr = filename.split('_')
+        gt_filename = attr[0] + '__' + attr[2] + '_' + attr[3] + '_' + attr[4] + '_finger.BMP'
 
-#         if gt_filename in train_subjects:
-#             writer.writerow([filename, attr[0], attr[2], attr[3], attr[4], attr[6].split('.')[0], d])
+        if gt_filename in train_subjects:
+            writer.writerow([filename, attr[0], attr[2], attr[3], attr[4], attr[6].split('.')[0], d])
 
-# f.close()
+f.close()
