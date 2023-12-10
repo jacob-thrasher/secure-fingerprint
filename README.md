@@ -10,6 +10,7 @@ Code repository for "A Study on Performance Analysis of Deep Learning Algorithms
 
 # Requirements
 
+```
 torch==2.1.0
 torchvision==0.16.0
 torchmetrics==1.2.1
@@ -17,6 +18,7 @@ tqdm==4.65.0
 pandas==2.0.1
 numpy==1.24.3
 matplotlib==3.7.1
+```
 
 # Dataset
 
