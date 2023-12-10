@@ -100,7 +100,7 @@ class SOCOFing_class(Dataset):
     def __getitem__(self, idx):
         img_name = os.path.join(self.root_dir, self.data.iloc[idx, 0])
         image = Image.open(img_name).convert("RGB")
-        label = 0 if self.data.iloc[idx, 2] == 'M' else 1  # Assuming 'M' represents male and 'F' represents female
+        label = 1 if self.data.iloc[idx, 2] == 'M' else 0  # Assuming 'M' represents male and 'F' represents female
         # Convert label to a tensor
 
 

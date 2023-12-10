@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 files/Pred_Easy.csv
 files/Pred_Hard.csv
+models/classifier.pt
 
 # C extensions
 *.so
