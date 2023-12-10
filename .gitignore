@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+files/Pred_Easy.csv
+files/Pred_Hard.csv
 
 # C extensions
 *.so

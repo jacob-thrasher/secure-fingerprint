@@ -7,7 +7,7 @@ import torch.nn.functional as F
 # CLASSIFIER #
 ##############
 
-class SimpleCNN(torch.nn.Module):
+class SimpleCNN(nn.Module):
 
    def __init__(self):
         super(SimpleCNN, self).__init__()

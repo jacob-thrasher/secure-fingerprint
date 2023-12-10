@@ -2,11 +2,32 @@ import os
 import random
 import torchvision.transforms.functional as F
 import pandas as pd
+import csv
 
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
 from tqdm import tqdm
+
+def class_csv_from_vae_out(root, dst, csvname):
+    '''
+    Args:
+        root (pathLike): path to VAE outputs
+        dst (pathLike): path to csv output
+        csvname (str): output name
+    '''
+
+    f = open(os.path.join(dst, csvname), 'w', newline='')
+    writer = csv.writer(f)
+    writer.writerow(["Image Name", "Number", "Gender", "Hand", "Finger", "Alteration"])
+
+    for filename in tqdm(os.listdir(root)):
+        attr = filename.split('_')
+
+        writer.writerow([filename, attr[0], attr[2], attr[3], attr[4], attr[6].split('.')[0]])
+
+    f.close()
+
 
 # TODO: Add support for altered fingerprints
 # TODO: Add validation support
@@ -61,7 +82,8 @@ class ToRGBTensor(object):
         return transforms.ToTensor()(img)
 
 class SOCOFing_class(Dataset):
-    def __init__(self, csv_file, root_dir, transform=None):
+    def __init__(self, csv_file, root_dir, return_filename=False):
+        self.return_filename = return_filename
         self.data = pd.read_csv(csv_file)
         self.root_dir = root_dir
         self.transform = transforms.Compose([
@@ -77,13 +99,14 @@ class SOCOFing_class(Dataset):
 
     def __getitem__(self, idx):
         img_name = os.path.join(self.root_dir, self.data.iloc[idx, 0])
-        image = Image.open(img_name)
+        image = Image.open(img_name).convert("RGB")
         label = 0 if self.data.iloc[idx, 2] == 'M' else 1  # Assuming 'M' represents male and 'F' represents female
         # Convert label to a tensor
 
-        if self.transform:
-            image = self.transform(image)
 
+        image = self.transform(image)
+
+        if self.return_filename: return image, label, self.data.iloc[idx, 0]
         return image, label
 
 ###############
@@ -106,6 +129,9 @@ class SOCOFing_Gen(Dataset):
             self.df = self.df[self.df['Difficulty'] != d]
 
         self.df = self.df.sample(frac=sample, random_state=1)
+        
+        # TEMP
+        # self.df = self.df[self.df['isCorrect'] == False]
 
         self.data_root = data_root
         self.gt_root = gt_root        

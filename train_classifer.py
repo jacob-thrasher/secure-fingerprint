@@ -8,13 +8,13 @@ torch.manual_seed(69)
 
 data_root = 'D:\\Big_Data\\SOCOFing'
 
-train_dataset = SOCOFing_class(csv_file='data/class_from_vae/Hard_50.csv', root_dir=os.path.join(data_root, 'Repaired/Repaired-Hard_50'))
-# val_dataset = SOCOFing_class(csv_file='data/base/test_set_1.csv', root_dir=os.path.join(data_root, 'Real'))
-test_dataset = SOCOFing_class(csv_file= 'data/base/test_set_2.csv', root_dir=os.path.join(data_root, 'Real'))
+train_dataset = SOCOFing_class(csv_file='data/base/train_set_1.csv', root_dir=os.path.join(data_root, 'Real'))
+val_dataset = SOCOFing_class(csv_file='data/base/test_set_1.csv', root_dir=os.path.join(data_root, 'Real'))
+# test_dataset = SOCOFing_class(csv_file= 'data/base/test_set_2.csv', root_dir=os.path.join(data_root, 'Real'))
 # Create data loaders
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-# val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
-test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
+# test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
 model = SimpleCNN()
 criterion = torch.nn.CrossEntropyLoss()
@@ -50,26 +50,11 @@ for epoch in range(num_epochs):
     scheduler.step(running_loss)
 
 # Evaluating the model
-# model.eval()
-# correct = 0
-# total = 0
-# with torch.no_grad():
-#     for inputs, labels in val_loader:
-#         inputs = inputs.to('cuda')
-#         labels = labels.to('cuda')
-
-#         outputs = model(inputs)
-#         _, predicted = torch.max(outputs.data, 1)
-#         total += labels.size(0)
-#         correct += (predicted == labels).sum().item()
-
-# print(f"Accuracy on validation set: {(correct/total)*100:.2f}%")
-
 model.eval()
 correct = 0
 total = 0
 with torch.no_grad():
-    for inputs, labels in test_loader:
+    for inputs, labels in val_loader:
         inputs = inputs.to('cuda')
         labels = labels.to('cuda')
 
@@ -78,4 +63,21 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-print(f"Accuracy on test set: {(correct/total)*100:.2f}%")
+print(f"Accuracy on validation set: {(correct/total)*100:.2f}%")
+
+torch.save(model.state_dict(), 'models/classifier.pt')
+
+# model.eval()
+# correct = 0
+# total = 0
+# with torch.no_grad():
+#     for inputs, labels in test_loader:
+#         inputs = inputs.to('cuda')
+#         labels = labels.to('cuda')
+
+#         outputs = model(inputs)
+#         _, predicted = torch.max(outputs.data, 1)
+#         total += labels.size(0)
+#         correct += (predicted == labels).sum().item()
+
+# print(f"Accuracy on test set: {(correct/total)*100:.2f}%")
